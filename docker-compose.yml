@@ -1,0 +1,66 @@
+version: '3.8'
+
+services:
+  db-local:
+    profiles:
+      - local
+      - infra
+    image: postgres:14
+    hostname: db-local
+    restart: unless-stopped
+    ports:
+      - '${DATABASE_PORT:?DATABASE_PORT env var is missing on .env file}:5432'
+    environment:
+      POSTGRES_DB: ${DATABASE_NAME:?DATABASE_NAME env var is missing on .env file}
+      POSTGRES_USER: ${DATABASE_USERNAME:?DATABASE_USERNAME env var is missing on .env file}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:?DATABASE_PASSWORD env var is missing on .env file}
+    volumes:
+      - ./data/db-local:/var/lib/postgresql/data
+
+  db-test:
+    profiles:
+      - test
+    image: postgres:14
+    hostname: db-test
+    restart: unless-stopped
+    ports:
+      - '${DATABASE_PORT:?DATABASE_PORT env var is missing on .env file}:5432'
+    environment:
+      POSTGRES_DB: ${DATABASE_NAME:?DATABASE_NAME env var is missing on .env file}
+      POSTGRES_USER: ${DATABASE_USERNAME:?DATABASE_USERNAME env var is missing on .env file}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:?DATABASE_PASSWORD env var is missing on .env file}
+
+  adminer:
+    profiles:
+      - local
+      - infra
+    image: adminer
+    hostname: adminer
+    restart: unless-stopped
+    ports:
+      - '${ADMINER_PORT:?ADMINER_PORT env var is missing on .env file}:8080'
+    depends_on:
+      - db-local
+
+  api-local:
+    profiles:
+      - local
+    build:
+      context: .
+      dockerfile: ./build/app/Dockerfile
+    command: ./wait-for.sh db-local:5432 -- npm run start:watch
+    hostname: api-local
+    restart: unless-stopped
+    ports:
+      - '${API_PORT:?API_PORT env var is missing on .env file}:${API_PORT}'
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: 'local'
+      DATABASE_HOST: 'db-local'
+      DATABASE_PORT: '5432'
+      DATABASE_URL: 'postgresql://${DATABASE_USERNAME}:${DATABASE_PASSWORD}@db-local:5432/${DATABASE_NAME}?schema=public'
+    volumes:
+      - ./src:/home/node/src
+    depends_on:
+      - db-local
