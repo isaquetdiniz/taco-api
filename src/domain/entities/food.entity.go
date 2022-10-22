@@ -4,13 +4,13 @@ import "fmt"
 
 type Food struct {
 	*Entity
-	*Category
+	Category
 	*NutritionalInformations
 }
 
 func NewFood(
 	name string,
-	category *Category,
+	category Category,
 	nutritionalInformations *NutritionalInformations,
 	options ...Option,
 ) *Food {

@@ -10,6 +10,10 @@ import (
 
 func main() {
 
+	//teste := gorm.NewGormConnection("")
+
+	//fmt.Println(teste)
+
 	category := entities.NewCategory("Cereal")
 
 	nutritionalInformations := &entities.NutritionalInformations{
@@ -20,7 +24,7 @@ func main() {
 
 	f := entities.NewFood(
 		"Arroz",
-		category,
+		*category,
 		nutritionalInformations,
 	)
 
