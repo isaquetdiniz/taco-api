@@ -6,9 +6,13 @@ import (
 	"log"
 	"net/http"
 	"taco-api/src/domain/entities"
+	config "taco-api/src/infra/viper"
 )
 
 func main() {
+	configs := config.Init()
+
+	fmt.Println(configs)
 
 	//teste := gorm.NewGormConnection("")
 
