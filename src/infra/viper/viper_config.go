@@ -13,11 +13,21 @@ type Configs struct {
 }
 
 func Init() Configs {
-	viper.SetConfigFile(".env")
+	viper.AddConfigPath("./")
+	viper.SetConfigName(".env")
+	viper.SetConfigType("env")
+	viper.AutomaticEnv()
 
 	err := viper.ReadInConfig()
+
 	if err != nil {
-		panic(fmt.Errorf("Fatal error config file: %w", err))
+		_, errIsFileNotFound := err.(viper.ConfigFileNotFoundError)
+
+		if errIsFileNotFound {
+			fmt.Println("Env file not found")
+		} else {
+			panic(fmt.Errorf("Fatal error config file: %w", err))
+		}
 	}
 
 	viper.SetDefault("MODE", "LOCAL")
