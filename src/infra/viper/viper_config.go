@@ -1,12 +1,35 @@
 package config
 
-import "github.com/spf13/viper"
+import (
+	"fmt"
 
-viper.SetDefault("port", 3000)
-viper.SetConfigName("env")
-viper.AddConfigPath("taco-api")
+	"github.com/spf13/viper"
+)
 
-err := viper.ReadInConfig()
-if err != nil {
-	panic(fmt.Errorf("fatal error config file: %w", err))
+type Configs struct {
+	MODE string
+	PORT int
+	DSN  string
+}
+
+func Init() Configs {
+	viper.SetConfigFile(".env")
+
+	err := viper.ReadInConfig()
+	if err != nil {
+		panic(fmt.Errorf("Fatal error config file: %w", err))
+	}
+
+	viper.SetDefault("MODE", "LOCAL")
+	viper.SetDefault("PORT", 3000)
+
+	mode := viper.GetString("MODE")
+	port := viper.GetInt("PORT")
+	databaseUrl := viper.GetString("DATABASE_URL")
+
+	return Configs{
+		MODE: mode,
+		PORT: port,
+		DSN:  databaseUrl,
+	}
 }
