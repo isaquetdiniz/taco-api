@@ -53,6 +53,7 @@ services:
       - '${PORT:?PORT env var is missing on .env file}:${PORT}'
     environment:
       MODE: 'local'
+      PORT: '${PORT:?PORT env var is missing on .env}'
       DATABASE_URL: 'postgresql://${DATABASE_USERNAME}:${DATABASE_PASSWORD}@db-local:5432/${DATABASE_NAME}'
     depends_on:
       - db-local
