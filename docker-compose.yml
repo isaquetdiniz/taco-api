@@ -5,7 +5,7 @@ services:
     profiles:
       - local
       - infra
-    image: postgres:14
+    image: postgres:13
     hostname: db-local
     restart: unless-stopped
     ports:
@@ -20,7 +20,7 @@ services:
   db-test:
     profiles:
       - test
-    image: postgres:14
+    image: postgres:13
     hostname: db-test
     restart: unless-stopped
     ports:
@@ -45,22 +45,14 @@ services:
   api-local:
     profiles:
       - local
-    build:
-      context: .
-      dockerfile: ./build/app/Dockerfile
-    command: ./wait-for.sh db-local:5432 -- npm run start:watch
+    build: .
+    command: ./wait-for.sh db-local:5432
     hostname: api-local
     restart: unless-stopped
     ports:
-      - '${API_PORT:?API_PORT env var is missing on .env file}:${API_PORT}'
-    env_file:
-      - .env
+      - '${PORT:?PORT env var is missing on .env file}:${PORT}'
     environment:
-      NODE_ENV: 'local'
-      DATABASE_HOST: 'db-local'
-      DATABASE_PORT: '5432'
-      DATABASE_URL: 'postgresql://${DATABASE_USERNAME}:${DATABASE_PASSWORD}@db-local:5432/${DATABASE_NAME}?schema=public'
-    volumes:
-      - ./src:/home/node/src
+      MODE: 'local'
+      DATABASE_URL: 'postgresql://${DATABASE_USERNAME}:${DATABASE_PASSWORD}@db-local:5432/${DATABASE_NAME}'
     depends_on:
       - db-local

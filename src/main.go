@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"taco-api/src/domain/entities"
+	"taco-api/src/infra/gorm"
 	config "taco-api/src/infra/viper"
 )
 
@@ -14,9 +15,9 @@ func main() {
 
 	fmt.Println(configs)
 
-	//teste := gorm.NewGormConnection("")
+	teste := gorm.NewConnection(configs.DSN)
 
-	//fmt.Println(teste)
+	fmt.Println(teste)
 
 	category := entities.NewCategory("Cereal")
 

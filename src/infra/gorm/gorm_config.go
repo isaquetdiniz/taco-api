@@ -11,7 +11,7 @@ type GormConnection struct {
 	connection *gorm.DB
 }
 
-func NewGormConnection(dsn string) *GormConnection {
+func NewConnection(dsn string) *GormConnection {
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 
 	if err != nil {
