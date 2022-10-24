@@ -3,8 +3,8 @@ package usecases
 import (
 	"log"
 	"taco-api/src/application/exceptions"
-	"taco-api/src/domain/entities"
-	"taco-api/src/domain/repositories"
+	"taco-api/src/application/repositories"
+	"taco-api/src/domain"
 )
 
 type CreateCategoryUsecase struct {
@@ -17,18 +17,18 @@ func NewCreateCategoryUsecase(
 	return CreateCategoryUsecase{repository: categoryRepo}
 }
 
-func (c CreateCategoryUsecase) Perform(name string) (entities.Category, error) {
+func (c CreateCategoryUsecase) Perform(name string) (domain.Category, error) {
 	_, exists, error := c.repository.GetByName(name)
 
 	if error != nil {
-		log.Print(error.Error())
+		log.Fatal(error.Error())
 	}
 
 	if exists {
-		return entities.Category{}, exceptions.CategoryAlreadyExists
+		return domain.Category{}, exceptions.CategoryAlreadyExists
 	}
 
-	category := entities.NewCategory(name)
+	category := domain.NewCategory(name)
 
 	categoryCreated := c.repository.Save(category)
 

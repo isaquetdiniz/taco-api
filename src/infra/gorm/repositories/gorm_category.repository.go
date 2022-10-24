@@ -2,7 +2,7 @@ package repositories
 
 import (
 	"log"
-	"taco-api/src/domain/entities"
+	"taco-api/src/domain"
 	"taco-api/src/infra/gorm/models"
 
 	"gorm.io/gorm"
@@ -16,7 +16,7 @@ func NewGormCategoryRepository(connection *gorm.DB) GormCategoryRepository {
 	return GormCategoryRepository{connection: connection}
 }
 
-func (r GormCategoryRepository) Save(category *entities.Category) *entities.Category {
+func (r GormCategoryRepository) Save(category *domain.Category) *domain.Category {
 
 	gormCategory := models.GormCategoryModel{
 		Uuid: category.ID,
@@ -32,20 +32,20 @@ func (r GormCategoryRepository) Save(category *entities.Category) *entities.Cate
 	return category
 }
 
-func (r GormCategoryRepository) GetByName(name string) (entities.Category, bool, error) {
+func (r GormCategoryRepository) GetByName(name string) (domain.Category, bool, error) {
 	var gormCategory models.GormCategoryModel
 
 	result := r.connection.First(&gormCategory, "name = ?", name)
 
 	if result.RowsAffected == 0 {
-		return entities.Category{}, false, nil
+		return domain.Category{}, false, nil
 	}
 
-	category := entities.NewCategory(
+	category := domain.NewCategory(
 		name,
-		entities.WithID(gormCategory.Uuid),
-		entities.WithCreatedAt(gormCategory.CreatedAt),
-		entities.WithUpdatedAt(gormCategory.UpdatedAt),
+		domain.WithID(gormCategory.Uuid),
+		domain.WithCreatedAt(gormCategory.CreatedAt),
+		domain.WithUpdatedAt(gormCategory.UpdatedAt),
 	)
 
 	return *category,
