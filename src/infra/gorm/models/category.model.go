@@ -2,8 +2,12 @@ package models
 
 import "gorm.io/gorm"
 
-type GormGategoryModel struct {
+type GormCategoryModel struct {
 	gorm.Model
-	Uuid string
-	Name string
+	Uuid string `gorm:"unique"`
+	Name string `gorm:"unique"`
+}
+
+func (GormCategoryModel) TableName() string {
+	return "categories"
 }

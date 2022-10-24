@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"log"
 	"taco-api/src/application/usecases"
 	"taco-api/src/domain/repositories"
 	"taco-api/src/interface/dtos"
@@ -11,25 +10,20 @@ type CreateCategoryController struct {
 	usecase usecases.CreateCategoryUsecase
 }
 
-func NewCreateCategoryUsecase(
-	categoryRepo repositories.CategoryRepository
-  ) CreateCategoryController {
+func NewCreateCategoryController(
+	categoryRepo repositories.CategoryRepository,
+) CreateCategoryController {
 	return CreateCategoryController{
-		usecase: usecases.NewCreateCategoryUsecase(),
+		usecase: usecases.NewCreateCategoryUsecase(categoryRepo),
 	}
 }
 
-func (c CreateCategoryController) Execute(name string) dtos.EntityDTO {
-  category, error := c.usecase.Perform(name)
+func (c CreateCategoryController) Execute(name string) (dtos.EntityDTO, error) {
+	category, error := c.usecase.Perform(name)
 
-  if error != nil {
-    log.Fatal(error.Error())
-  }
+	if error != nil {
+		return dtos.CategoryDTO{}, error
+	}
 
-  return dtos.EntityDTO{
-    ID: category.ID,
-    Name: category.Name,
-    CreatedAt: category.CreatedAt,
-    UpdatedAt: category.UpdatedAt,
-  }
+	return dtos.NewCategoryDTO(category), nil
 }

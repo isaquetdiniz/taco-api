@@ -18,7 +18,7 @@ func NewGormCategoryRepository(connection *gorm.DB) GormCategoryRepository {
 
 func (r GormCategoryRepository) Save(category *entities.Category) *entities.Category {
 
-	gormCategory := models.GormGategoryModel{
+	gormCategory := models.GormCategoryModel{
 		Uuid: category.ID,
 		Name: category.Name,
 	}
@@ -30,4 +30,25 @@ func (r GormCategoryRepository) Save(category *entities.Category) *entities.Cate
 	}
 
 	return category
+}
+
+func (r GormCategoryRepository) GetByName(name string) (entities.Category, bool, error) {
+	var gormCategory models.GormCategoryModel
+
+	result := r.connection.First(&gormCategory, "name = ?", name)
+
+	if result.RowsAffected == 0 {
+		return entities.Category{}, false, nil
+	}
+
+	category := entities.NewCategory(
+		name,
+		entities.WithID(gormCategory.Uuid),
+		entities.WithCreatedAt(gormCategory.CreatedAt),
+		entities.WithUpdatedAt(gormCategory.UpdatedAt),
+	)
+
+	return *category,
+		true,
+		nil
 }

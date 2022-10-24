@@ -21,7 +21,7 @@ func (c CreateCategoryUsecase) Perform(name string) (entities.Category, error) {
 	_, exists, error := c.repository.GetByName(name)
 
 	if error != nil {
-		log.Fatal(error.Error())
+		log.Print(error.Error())
 	}
 
 	if exists {
