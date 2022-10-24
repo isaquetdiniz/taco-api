@@ -1,8 +1,8 @@
 package controllers
 
 import (
+	"taco-api/src/application/repositories"
 	"taco-api/src/application/usecases"
-	"taco-api/src/domain/repositories"
 	"taco-api/src/interface/dtos"
 )
 
