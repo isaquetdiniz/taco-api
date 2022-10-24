@@ -2,27 +2,34 @@ package gorm
 
 import (
 	"log"
+	"taco-api/src/infra/gorm/models"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 type GormConnection struct {
-	connection *gorm.DB
+	Connection *gorm.DB
 }
 
 func NewConnection(dsn string) *GormConnection {
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Silent),
+	})
 
 	if err != nil {
 		log.Fatal(err.Error())
 	}
 
-	return &GormConnection{connection: db}
+	db.Set("gorm:table_options", "ENGINE=InnoDB")
+	db.AutoMigrate(&models.GormCategoryModel{})
+
+	return &GormConnection{Connection: db}
 }
 
 func (g GormConnection) Close() {
-	db, err := g.connection.DB()
+	db, err := g.Connection.DB()
 
 	if err != nil {
 		log.Fatal(err.Error())
