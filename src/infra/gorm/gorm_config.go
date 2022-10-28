@@ -24,6 +24,7 @@ func NewConnection(dsn string) *GormConnection {
 
 	db.Set("gorm:table_options", "ENGINE=InnoDB")
 	db.AutoMigrate(&models.GormCategoryModel{})
+	db.AutoMigrate(&models.GormFoodModel{})
 
 	return &GormConnection{Connection: db}
 }
