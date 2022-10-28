@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 
+	"taco-api/src/domain"
 	"taco-api/src/infra/gorm"
 	gormRepositories "taco-api/src/infra/gorm/repositories"
 	config "taco-api/src/infra/viper"
@@ -18,15 +19,33 @@ func main() {
 	gormConnection := gorm.NewConnection(configs.DSN)
 
 	categoryRepo := gormRepositories.NewGormCategoryRepository(gormConnection.Connection)
+	foodRepo := gormRepositories.NewGormFoodRepository(gormConnection.Connection)
+
 	createCategoryController := controllers.NewCreateCategoryController(categoryRepo)
+	createFoodController := controllers.NewCreateFoodController(categoryRepo, foodRepo)
 
-	categoryCreated, error := createCategoryController.Execute("Teste do 6")
+	categoryCreated, error1 := createCategoryController.Execute("Teste do 6")
 
-	if error != nil {
-		log.Fatal(error.Error())
+	if error1 != nil {
+		log.Fatal(error1.Error())
 	}
 
 	fmt.Println(categoryCreated)
+
+	nt := domain.NutritionalInformations{
+		Protein:      10,
+		Kcal:         1000,
+		Carbohydrate: 1000,
+		Lipid:        1000,
+	}
+
+	foodCreated, error2 := createFoodController.Execute("Teste de comida", categoryCreated.ID, nt)
+
+	if error2 != nil {
+		log.Fatal(error2.Error())
+	}
+
+	fmt.Println(foodCreated)
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Hello, %q", html.EscapeString(r.URL.Path))

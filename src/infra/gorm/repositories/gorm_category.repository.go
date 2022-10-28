@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"fmt"
 	"log"
 	"taco-api/src/domain"
 	"taco-api/src/infra/gorm/models"
@@ -43,6 +44,29 @@ func (r GormCategoryRepository) GetByName(name string) (domain.Category, bool, e
 
 	category := domain.NewCategory(
 		name,
+		domain.WithID(gormCategory.Uuid),
+		domain.WithCreatedAt(gormCategory.CreatedAt),
+		domain.WithUpdatedAt(gormCategory.UpdatedAt),
+	)
+
+	return *category,
+		true,
+		nil
+}
+
+func (r GormCategoryRepository) GetById(id string) (domain.Category, bool, error) {
+	var gormCategory models.GormCategoryModel
+
+	result := r.connection.First(&gormCategory, "uuid = ?", id)
+
+	if result.RowsAffected == 0 {
+		return domain.Category{}, false, nil
+	}
+
+	fmt.Println(result)
+
+	category := domain.NewCategory(
+		result.Name(),
 		domain.WithID(gormCategory.Uuid),
 		domain.WithCreatedAt(gormCategory.CreatedAt),
 		domain.WithUpdatedAt(gormCategory.UpdatedAt),
